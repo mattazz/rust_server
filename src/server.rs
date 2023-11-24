@@ -12,6 +12,6 @@ impl Server {
     pub fn run(&mut self) {
         println!("Listening on {}", self.addr);
 
-        let listener = TcpListener::bind(&self.addr);
+        let listener = TcpListener::bind(&self.addr).unwrap();
     }
 }
