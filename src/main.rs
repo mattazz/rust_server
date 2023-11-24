@@ -3,17 +3,33 @@ fn main() {
     server.run();
 }
 
-struct Server{
+struct Server {
     addr: String,
 }
-impl Server{
-    fn new(addr: &str) -> Self{
+impl Server {
+    fn new(addr: &str) -> Self {
         Self {
-            addr: addr.to_string()
+            addr: addr.to_string(),
         }
     }
 
-    fn run(&mut self){
+    fn run(&mut self) {}
+}
 
-    }
+struct Requests {
+    path: String,
+    query_string: String,
+    method: Method,
+}
+
+enum Method {
+    GET,
+    DELETE,
+    POST,
+    PUT,
+    HEAD,
+    CONNECT,
+    OPTIONS,
+    TRACE,
+    PATCH,
 }
