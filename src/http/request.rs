@@ -17,8 +17,19 @@ impl TryFrom<&[u8]> for Request {
     //Get /search?name=abc&sort=1 HTTP/1.1
     fn try_from(buf: &[u8]) -> Result<Self, Self::Error> {
         let request = from_utf8(buf)?;
+
         unimplemented!()
     }
+}
+
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+    for (i, c) in request.chars().enumerate() {
+        if c == ' ' {
+            return Some((&request[..i], &request[i + 1..]));
+        }
+    }
+
+    None
 }
 pub enum ParseError {
     InvalidRequest,
