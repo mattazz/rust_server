@@ -1,3 +1,5 @@
+use crate::http::request;
+
 use super::method::Method;
 use std::convert::TryFrom;
 use std::error::Error;
@@ -14,23 +16,34 @@ pub struct Request {
 impl TryFrom<&[u8]> for Request {
     type Error = ParseError;
 
-    //Get /search?name=abc&sort=1 HTTP/1.1
+    //Get /search?name=abc&sort=1 HTTP/1.1\r\n...HEADERS...
     fn try_from(buf: &[u8]) -> Result<Self, Self::Error> {
         let request = from_utf8(buf)?;
+
+        let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+
+        // Check if the method is using a valid protocol
+        if protocol != "HTTP/1.1" {
+            return Err(ParseError::InvalidProtocol);
+        }
 
         unimplemented!()
     }
 }
 
+// Get /search?name=abc&sort=1 HTTP/1.1\r\n...HEADERS... => For parsing
 fn get_next_word(request: &str) -> Option<(&str, &str)> {
     for (i, c) in request.chars().enumerate() {
-        if c == ' ' {
+        if c == ' ' || c == '\r' {
             return Some((&request[..i], &request[i + 1..]));
         }
     }
 
     None
 }
+
 pub enum ParseError {
     InvalidRequest,
     InvalidEncoding,
